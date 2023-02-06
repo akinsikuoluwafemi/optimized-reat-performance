@@ -1,23 +1,75 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { useState } from "react";
 
 function App() {
+  const [count] = useState(1_000);
+  const [scrollTop, setScrollTop] = useState(0);
+
+  const itemHeight = 30;
+  const windowHeight = 500;
+  const innerHeight = count * itemHeight;
+
+  const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - 3);
+  const endIndex = Math.min(
+    Math.floor((scrollTop + windowHeight) / itemHeight) + 3,
+    count
+  );
+
+  const items = Array.from({ length: count }, (_, i) => {
+    return {
+      index: i + 1,
+      name: `Movie ${i + 1}`,
+    };
+  });
+
+  function displayMovieItems() {
+    const displayeditems = items.slice(startIndex, endIndex);
+    console.log({ displayeditems, startIndex, endIndex });
+    const movieList = displayeditems.map((item) => {
+      return (
+        <div
+          style={{
+            height: itemHeight,
+            position: "absolute",
+            width: "100%",
+            top: `${item.index * itemHeight}px`,
+          }}
+          key={item.index}
+        >
+          {item.name}
+        </div>
+      );
+    });
+    return movieList;
+  }
+
+  function onScroll(e) {
+    // console.log(e.target.scrollTop);
+    setScrollTop(e.target.scrollTop);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <h1>Todo</h1>
+      <div
+        className="outerbox"
+        onScroll={onScroll}
+        style={{
+          border: "1px solid red",
+          overflowY: "scroll",
+          height: windowHeight,
+          width: 300,
+          margin: "0 auto",
+        }}
+      >
+        <div
+          className="innerbox"
+          style={{ position: "relative", height: innerHeight }}
         >
-          Learn React
-        </a>
-      </header>
+          {displayMovieItems()}
+        </div>
+      </div>
     </div>
   );
 }
